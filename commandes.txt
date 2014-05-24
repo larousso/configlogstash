@@ -1,0 +1,40 @@
+#Run : stopper syslog car sinon ça ne fonctionne pas : 
+sudo launchctl unload /System/Library/LaunchDaemons/com.apple.syslogd.plist
+
+#Redis 
+cd /Users/adelegue/Documents/conf/breizhcamp/demo/redis-2.8.8
+src/redis-server
+
+#Elasticsearch 
+cd /Users/adelegue/Documents/conf/breizhcamp/demo/elasticsearch-1.1.1/
+bin/elasticsearch -d
+
+#Httpd 
+ls /Library/WebServer/Documents/kibana
+sudo httpd -k start
+
+
+#Play 
+cd /Users/adelegue/Documents/conf/breizhcamp/demo/logproducer
+play run
+
+#MongoDb
+mongod
+
+syslog -s -r localhost message
+
+#Etape 1 
+cd /Users/adelegue/Documents/conf/breizhcamp/demo/logstash/etape1
+sudo logstash -f agent.conf
+logstash -f indexer.conf
+ps -ef | grep indexer.conf
+
+#Etape 2
+#Lumberjack 
+cd /Users/adelegue/Documents/conf/breizhcamp/demo/lumberjack
+logstash-forwarder/logstash-forwarder -config logstash-forwarder.conf
+
+#Logstash : 
+cd /Users/adelegue/Documents/conf/breizhcamp/demo/logstash/etape2
+sudo logstash -f input.conf
+logstash -f indexer.conf
